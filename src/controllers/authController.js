@@ -1,5 +1,5 @@
 import userService from '../services/userService.js';
-import { registerSchema } from '../validators/authValidator.js';
+import { loginSchema, registerSchema } from '../validators/authValidator.js';
 import { generateToken } from '../utils/jwt.js';
 import { ZodError } from 'zod';
 
@@ -33,5 +33,53 @@ export const register = async (req, res) => {
 
     console.error('Registration error:', error);
     res.status(500).json({ error: 'Registration failed' });
+  }
+};
+
+export const login = async (req, res) => {
+  try {
+    const { username, password } = loginSchema.parse(req.body);
+
+    const user = await userService.getUserByUsername(username);
+
+    if (!user) {
+      return res.status(401).json({
+        error: 'Invalid credentials',
+      });
+    }
+
+    const isPasswordValid = await userService.verifyPassword(
+      password,
+      user.password
+    );
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        error: 'Invalid credentials',
+      });
+    }
+
+    const token = generateToken({ userId: user.id, username: user.username });
+
+    const { password: _, ...userWithoutPassword } = user;
+
+    res.json({
+      message: 'Login successful',
+      user: userWithoutPassword,
+      token,
+    });
+  } catch (error) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        error: 'Validation failed',
+        details: error.issues.map((err) => ({
+          field: err.path.join('.'),
+          message: err.message,
+        })),
+      });
+    }
+
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Login failed' });
   }
 };

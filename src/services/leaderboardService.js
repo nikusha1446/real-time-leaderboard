@@ -38,6 +38,23 @@ class LeaderboardService {
       username,
     };
   }
+
+  async getGlobalLeaderboard(limit = 10) {
+    const client = redisClient.getClient();
+
+    const results = await client.zRangeWithScores(
+      this.globalLeaderboardKey,
+      0,
+      limit - 1,
+      { REV: true }
+    );
+
+    return results.map((result, index) => ({
+      rank: index + 1,
+      userId: result.value,
+      score: result.score,
+    }));
+  }
 }
 
 const leaderboardService = new LeaderboardService();

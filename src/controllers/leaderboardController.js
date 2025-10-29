@@ -29,3 +29,25 @@ export const submitScore = async (req, res) => {
     res.status(500).json({ error: 'Failed to submit score' });
   }
 };
+
+export const getGlobalLeaderboard = async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+
+    if (limit < 1 || limit > 100) {
+      return res.status(400).json({
+        error: 'Limit must be between 1 and 100',
+      });
+    }
+
+    const leaderboard = await leaderboardService.getGlobalLeaderboard(limit);
+
+    res.json({
+      leaderboard,
+      total: leaderboard.length,
+    });
+  } catch (error) {
+    console.error('Get leaderboard error:', error);
+    res.status(500).json({ error: 'Failed to get leaderboard' });
+  }
+};

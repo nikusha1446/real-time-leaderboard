@@ -55,6 +55,21 @@ class LeaderboardService {
       score: result.score,
     }));
   }
+
+  async getGameLeaderboard(game, limit = 10) {
+    const client = redisClient.getClient();
+    const gameKey = `${this.gameLeaderboardPrefix}${game}`;
+
+    const results = await client.zRangeWithScores(gameKey, 0, limit - 1, {
+      REV: true,
+    });
+
+    return results.map((result, index) => ({
+      rank: index + 1,
+      userId: result.value,
+      score: result.score,
+    }));
+  }
 }
 
 const leaderboardService = new LeaderboardService();

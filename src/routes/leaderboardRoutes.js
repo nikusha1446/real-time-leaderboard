@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  getGameLeaderboard,
   getGlobalLeaderboard,
   submitScore,
 } from '../controllers/leaderboardController.js';
@@ -9,5 +10,6 @@ const router = express.Router();
 
 router.post('/scores', authenticate, submitScore);
 router.get('/', getGlobalLeaderboard);
+router.get('/game/:game', getGameLeaderboard);
 
 export default router;

@@ -51,3 +51,30 @@ export const getGlobalLeaderboard = async (req, res) => {
     res.status(500).json({ error: 'Failed to get leaderboard' });
   }
 };
+
+export const getGameLeaderboard = async (req, res) => {
+  try {
+    const { game } = req.params;
+    const limit = parseInt(req.query.limit) || 10;
+
+    if (limit < 1 || limit > 100) {
+      return res.status(400).json({
+        error: 'Limit must be between 1 and 100',
+      });
+    }
+
+    const leaderboard = await leaderboardService.getGameLeaderboard(
+      game,
+      limit
+    );
+
+    res.json({
+      game,
+      leaderboard,
+      total: leaderboard.length,
+    });
+  } catch (error) {
+    console.error('Get game leaderboard error:', error);
+    res.status(500).json({ error: 'Failed to get game leaderboard' });
+  }
+};

@@ -1,6 +1,7 @@
 import express from 'express';
 import redisClient from './config/redis.js';
 import authRoutes from './routes/authRoutes.js';
+import leaderboardRoutes from './routes/leaderboardRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -42,6 +43,7 @@ app.get('/health/redis', async (req, res) => {
 
 // routes
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/leaderboard', leaderboardRoutes);
 
 // initialize server
 async function startServer() {

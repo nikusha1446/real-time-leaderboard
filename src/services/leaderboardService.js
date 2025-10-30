@@ -70,6 +70,23 @@ class LeaderboardService {
       score: result.score,
     }));
   }
+
+  async getUserRank(userId) {
+    const client = redisClient.getClient();
+
+    const rank = await client.zRevRank(this.globalLeaderboardKey, userId);
+
+    if (rank === null) {
+      return null;
+    }
+
+    const score = await client.zScore(this.globalLeaderboardKey, userId);
+
+    return {
+      rank: rank + 1,
+      score: score,
+    };
+  }
 }
 
 const leaderboardService = new LeaderboardService();

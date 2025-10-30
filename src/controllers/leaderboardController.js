@@ -78,3 +78,26 @@ export const getGameLeaderboard = async (req, res) => {
     res.status(500).json({ error: 'Failed to get game leaderboard' });
   }
 };
+
+export const getUserRank = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+
+    const rankData = await leaderboardService.getUserRank(userId);
+
+    if (!rankData) {
+      return res.status(404).json({
+        error: 'User has no scores yet',
+      });
+    }
+
+    res.json({
+      userId,
+      username: req.user.username,
+      ...rankData,
+    });
+  } catch (error) {
+    console.error('Get user rank error:', error);
+    res.status(500).json({ error: 'Failed to get user rank' });
+  }
+};

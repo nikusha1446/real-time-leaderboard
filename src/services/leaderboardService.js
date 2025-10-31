@@ -106,6 +106,15 @@ class LeaderboardService {
       game: game,
     };
   }
+
+  async getUserScoreHistory(userId, limit = 10) {
+    const client = redisClient.getClient();
+    const userScoresKey = `${this.userScoresPrefix}${userId}`;
+
+    const scores = await client.lRange(userScoresKey, 0, limit - 1);
+
+    return scores.map((score) => JSON.parse(score));
+  }
 }
 
 const leaderboardService = new LeaderboardService();

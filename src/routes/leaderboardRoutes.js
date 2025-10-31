@@ -4,6 +4,7 @@ import {
   getGlobalLeaderboard,
   getUserGameRank,
   getUserRank,
+  getUserScoreHistory,
   submitScore,
 } from '../controllers/leaderboardController.js';
 import { authenticate } from '../middleware/authMiddleware.js';
@@ -15,5 +16,6 @@ router.get('/', getGlobalLeaderboard);
 router.get('/game/:game', getGameLeaderboard);
 router.get('/rank', authenticate, getUserRank);
 router.get('/rank/game/:game', authenticate, getUserGameRank);
+router.get('/history', authenticate, getUserScoreHistory);
 
 export default router;

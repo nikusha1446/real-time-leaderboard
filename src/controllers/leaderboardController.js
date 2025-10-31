@@ -125,3 +125,28 @@ export const getUserGameRank = async (req, res) => {
     res.status(500).json({ error: 'Failed to get user game rank' });
   }
 };
+
+export const getUserScoreHistory = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const limit = parseInt(req.query.limit) || 10;
+
+    if (limit < 1 || limit > 100) {
+      return res.status(400).json({
+        error: 'Limit must be between 1 and 100',
+      });
+    }
+
+    const history = await leaderboardService.getUserScoreHistory(userId, limit);
+
+    res.json({
+      userId,
+      username: req.user.username,
+      history,
+      total: history.length,
+    });
+  } catch (error) {
+    console.error('Get score history error:', error);
+    res.status(500).json({ error: 'Failed to get score history' });
+  }
+};

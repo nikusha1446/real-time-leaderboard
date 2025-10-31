@@ -101,3 +101,27 @@ export const getUserRank = async (req, res) => {
     res.status(500).json({ error: 'Failed to get user rank' });
   }
 };
+
+export const getUserGameRank = async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { game } = req.params;
+
+    const rankData = await leaderboardService.getUserGameRank(userId, game);
+
+    if (!rankData) {
+      return res.status(404).json({
+        error: 'User has no scores for this game',
+      });
+    }
+
+    res.json({
+      userId,
+      username: req.user.username,
+      ...rankData,
+    });
+  } catch (error) {
+    console.error('Get user game rank error:', error);
+    res.status(500).json({ error: 'Failed to get user game rank' });
+  }
+};
